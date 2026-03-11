@@ -1,6 +1,6 @@
 # Feedlot Segmentation in Kansas Using Spatial Priors
 
-This repository develops a segmentation workflow for identifying **feedlot lots**, **waste ponds**, and **other land cover** in Kansas using **AlphaEarth embeddings** and **spatial priors**. The current implementation uses spatial priors as a constrained search space and trains a **Random Forest** classifier for pixel-level classification. The **priors** were obtained using the [EI alternative workflow notebook](https://github.com/earth-genome/ei-notebook/blob/alt_workflow/ei_alt_workflow.ipynb).
+This repository develops a segmentation workflow for identifying **feedlot lots**, **waste ponds**, and **other land cover** in Kansas using **AlphaEarth embeddings** and **spatial priors**. The current implementation uses spatial priors as a constrained search space and trains a **Random Forest** classifier for pixel-level classification which were obtained using the [EI alternative workflow notebook](https://github.com/earth-genome/ei-notebook/blob/alt_workflow/ei_alt_workflow.ipynb).
 
 ## Overview
 
