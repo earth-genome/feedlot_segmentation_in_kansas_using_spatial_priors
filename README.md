@@ -1,6 +1,6 @@
 # Feedlot Segmentation in Kansas Using Spatial Priors
 
-This repository develops a segmentation workflow for identifying **feedlot lots**, **waste ponds**, and **other land cover** in Kansas using **AlphaEarth embeddings** and **spatial priors**. The current implementation uses spatial priors as a constrained search space and trains a **Random Forest** classifier for pixel-level classification.
+This repository develops a segmentation workflow for identifying **feedlot lots**, **waste ponds**, and **other land cover** in Kansas using **AlphaEarth embeddings** and **spatial priors**. The current implementation uses spatial priors as a constrained search space and trains a **Random Forest** classifier for pixel-level classification. The **priors** were obtained using the [EI alternative workflow notebook](https://github.com/earth-genome/ei-notebook/blob/alt_workflow/ei_alt_workflow.ipynb).
 
 ## Overview
 
@@ -14,21 +14,15 @@ The pipeline combines:
 
 1. **Spatial priors** that roughly localize candidate feedlot footprints.
 2. **AlphaEarth annual embedding tiles** as the input raster features.
-3. **Sampled point labels** drawn from polygons / priors.
+3. **Sampled point labels** drawn from labeled feedlots / priors.
 4. A **Random Forest classifier** trained to predict class labels at the pixel level.
 5. A post-training **inference and IoU evaluation** workflow.
 
-## Current workflow: W1
+## Methodology
 
 ### Main idea
 
-Workflow 1 uses the **intersection of spatial priors and labels** to construct training data. For now, the approach trains a **Random Forest classifier** to segment:
-
-- **lot (2)**
-- **pond (1)**
-- **other (0)**
-
-A key assumption in this workflow is that the sampled training points are taken **within the labels / priors**, which makes the training data dependent on the quality and completeness of those priors. In future versions, these sampled points could be replaced with **manually marked points inside the spatial priors**.
+Use the **intersection of spatial priors and labels** to construct training data. For now, the approach trains a **Random Forest classifier** for segmentation A key assumption in this workflow is that the sampled training points are taken **within the labels / priors**, which makes the training data dependent on the quality and completeness of those priors. In future versions, these sampled points could be replaced with **manually marked points inside the spatial priors**.
 
 ### Sampling design
 
@@ -57,7 +51,7 @@ This boundary assumption is useful for constraining the search area, but it intr
 
 This likely depresses performance near prior boundaries and contributes to false negatives for foreground classes.
 
-## Results (W1)
+## Results
 
 The following results are computed **only on pixels that were not sampled for training**:
 
@@ -74,7 +68,7 @@ The following results are computed **only on pixels that were not sampled for tr
 
 ### Interpretation
 
-The model performs well overall and achieves usable segmentation quality, especially given the noisy supervision setup. As expected:
+The model performs well overall and achieves usable segmentation quality. As expected:
 
 - **Other** has extremely high IoU.
 - **Lot** performs reasonably well.
@@ -117,7 +111,7 @@ feedlot_segmentation_in_kansas_using_spatial_priors/
 
 ### 2. Sample labeled points
 
-`src/2_sample_points_from_poly.ipynb` is used to sample point labels from polygons / priors.
+`src/2_sample_points_from_poly.ipynb` is used to sample points within intersection of labels and priors.
 
 ### 3. Extract raster values
 
@@ -137,91 +131,20 @@ feedlot_segmentation_in_kansas_using_spatial_priors/
 
 ### 7. Evaluate performance
 
-`src/7_calculate_pixel_iou.ipynb` computes pixel-level IoU metrics.
+`src/7_calculate_pixel_iou.ipynb` computes pixel-level IoU metrics on non sampled points.
 
 ## Data notes
 
 This workflow currently relies on:
 
 - **Spatial priors** for candidate feedlot regions.
-- **Label polygons / points** for supervision.
+- **Label polygons and points** for supervision.
 - **AlphaEarth annual embeddings** downloaded from GEE.
 
 Because the labels are partly induced by the prior geometry, the training data are not purely independent of the prior assumptions. This should be kept in mind when interpreting performance.
-
-## Environment and dependencies
-
-The repository is not yet packaged with a pinned environment file, but the existing code indicates dependencies such as:
-
-- `python>=3.10`
-- `geopandas`
-- `numpy`
-- `pandas`
-- `rasterio`
-- `rasterstats`
-- `tqdm`
-- `scikit-learn`
-- `earthengine-api`
-- `google-api-core`
-- `descarteslabs`
-- `affine`
-- `torch`
-- `tensorflow`
-
-A minimal setup might look like:
-
-```bash
-git clone https://github.com/earth-genome/feedlot_segmentation_in_kansas_using_spatial_priors.git
-cd feedlot_segmentation_in_kansas_using_spatial_priors
-
-python -m venv .venv
-source .venv/bin/activate
-pip install -U pip
-pip install geopandas numpy pandas rasterio rasterstats tqdm scikit-learn \
-    earthengine-api google-api-core descarteslabs affine torch tensorflow
-```
-
-You will also need to authenticate Google Earth Engine separately.
-
-## Example workflow
-
-A typical run follows this order:
-
-```bash
-# 1. Pull AlphaEarth tiles for a GeoJSON region
-python src/1_gee_data_pull.py \
-  --geojson-path path/to/priors.geojson \
-  --start-date 2024-01-01 \
-  --end-date 2024-12-31 \
-  --collection AlphaEarth
-```
-
-Then proceed through the notebooks in order:
-
-1. `2_sample_points_from_poly.ipynb`
-2. `3_sample_raster.py`
-3. `4_merge_to_final_data.ipynb`
-4. `5_model.ipynb`
-5. `6_inference.ipynb`
-6. `7_calculate_pixel_iou.ipynb`
 
 ## Known limitations
 
 - **Spatial-prior leakage / dependence:** labels are sampled within prior-defined regions.
 - **Boundary bias:** true foreground pixels outside buffered priors can be mislabeled as other.
 - **Class difficulty imbalance:** ponds are harder to segment than lots.
-- **Packaging:** the project would benefit from a `requirements.txt` or `environment.yml`.
-
-## Next steps
-
-Potential improvements include:
-
-- replacing sampled prior-based labels with **manually curated point labels**;
-- softening the prior constraint instead of using a hard boundary;
-- trying models beyond Random Forest;
-- calibrating the prior buffer size;
-- adding clearer experiment tracking and environment reproducibility.
-
-## Acknowledgment
-
-This repository is part of an Earth Genome workflow exploring whether **spatial priors can improve feedlot segmentation** using embedding-based remote sensing features.
