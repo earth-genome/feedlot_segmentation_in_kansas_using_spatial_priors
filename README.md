@@ -34,7 +34,7 @@ The current training sample uses:
 
 ### How spatial priors are used
 
-The spatial priors act as a **hard-ish boundary**:
+The spatial priors act as a **relatively hard boundary**:
 
 - The **bounding box** of each prior is taken.
 - That box is **expanded outward by a fixed positive buffer**.
