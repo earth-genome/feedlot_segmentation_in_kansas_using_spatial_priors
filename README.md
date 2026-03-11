@@ -22,7 +22,7 @@ The pipeline combines:
 
 ### Main idea
 
-Use the **intersection of spatial priors and labels** to construct training data. For now, the approach trains a **Random Forest classifier** for segmentation A key assumption in this workflow is that the sampled training points are taken **within the labels / priors**, which makes the training data dependent on the quality and completeness of those priors. In future versions, these sampled points could be replaced with **manually marked points inside the spatial priors**.
+Using the **intersection of spatial priors and labels** to construct training data, train a **Random Forest classifier** for segmentation. A key assumption in this workflow is that the sampled training points are taken **within the labels / priors**, which makes the training data dependent on the quality and completeness of those priors. In future versions, these sampled points could be replaced with **manually marked points inside the spatial priors**.
 
 ### Sampling design
 
