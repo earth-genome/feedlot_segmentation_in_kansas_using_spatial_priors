@@ -14,7 +14,7 @@ The pipeline combines:
 
 1. **Spatial priors** that roughly localize candidate feedlot footprints.
 2. **AlphaEarth annual embedding tiles** as the input raster features.
-3. **Sampled point labels** drawn from labeled feedlots / priors.
+3. **Sampled point labels** drawn from intersection of labeled feedlots and priors.
 4. A **Random Forest classifier** trained to predict class labels at the pixel level.
 5. A post-training **inference and IoU evaluation** workflow.
 
