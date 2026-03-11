@@ -1,1 +1,0 @@
-# feedlot_segmentation_in_kansas_using_spatial_priors
