@@ -76,7 +76,7 @@ The model performs well overall and achieves usable segmentation quality. As exp
 
 The relatively lower pond IoU is likely driven by two factors:
 
-1. the **hard-ish spatial boundary assumption**, and
+1. the **relatively hard spatial boundary assumption**, and
 2. **false positives near pond areas**.
 
 ## Repository structure
@@ -117,9 +117,9 @@ feedlot_segmentation_in_kansas_using_spatial_priors/
 
 `src/3_sample_raster.py` samples raster values for the training points.
 
-### 4. Merge features and labels
+### 4. Merge features and classes
 
-`src/4_merge_to_final_data.ipynb` combines the sampled raster features and labels into the final modeling table.
+`src/4_merge_to_final_data.ipynb` combines the sampled raster features and classes into the final modeling table.
 
 ### 5. Train the model
 
@@ -132,19 +132,3 @@ feedlot_segmentation_in_kansas_using_spatial_priors/
 ### 7. Evaluate performance
 
 `src/7_calculate_pixel_iou.ipynb` computes pixel-level IoU metrics on non sampled points.
-
-## Data notes
-
-This workflow currently relies on:
-
-- **Spatial priors** for candidate feedlot regions.
-- **Label polygons and points** for supervision.
-- **AlphaEarth annual embeddings** downloaded from GEE.
-
-Because the labels are partly induced by the prior geometry, the training data are not purely independent of the prior assumptions. This should be kept in mind when interpreting performance.
-
-## Known limitations
-
-- **Spatial-prior leakage / dependence:** labels are sampled within prior-defined regions.
-- **Boundary bias:** true foreground pixels outside buffered priors can be mislabeled as other.
-- **Class difficulty imbalance:** ponds are harder to segment than lots.
